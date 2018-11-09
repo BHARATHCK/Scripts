@@ -15,9 +15,9 @@
 # Script V1.1
 
 # Use: ./build_kernel.sh (clang|gcc) (stable|alpha)
-# Set Defaults to Clang and Alpha
+# Set Defaults to Clang and stable
 compiler_build=${1:-clang}
-build_type=${2:-alpha}
+build_type=${2:-stable}
 
 # Kernel
 KERNEL_DIR=$PWD
@@ -30,10 +30,10 @@ export HOME=~/BHARATH
 BUILD_START=$(date +"%s")
 
 # AnyKernel2 Dir
-ANYKERNEL_DIR=/home/bharath/Downloads/DB-v4
+ANYKERNEL_DIR=/media/KERNELdev/KERNEL_DEVELOPMENT/kitchen/Dark-Berry/
 
 # Export Zip Here
-EXPORT_DIR=/home/bharath/Downloads/flashables/
+EXPORT_DIR=/media/KERNELdev/KERNEL_DEVELOPMENT/flashables/
 
 # Zip Name [Changes before Release if parameter is stable]
 # CURRENT_VERSION is a file which defines CURRENT VERSION
@@ -41,7 +41,7 @@ EXPORT_DIR=/home/bharath/Downloads/flashables/
 # If param stable is provided use it to compile with filename TwistLoop-V-xyz.zip
 # If param alppha is provided use it to compile with filename TwistLoop-Alpha-dd-mm-yy.zip
 
-ZIP_NAME="DB-v7"
+ZIP_NAME="DB-v9"
 if [[ -f version_stable && $build_type == "stable" ]]; then
   CURRENT_VERSION=$(<version_stable)
   ZIP_NAME+="V-"
@@ -59,14 +59,14 @@ export ARCH=arm64
 export SUBARCH=arm64
 
 # Change the Paths [if needed]
-export CROSS_COMPILE="/home/bharath/Downloads/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
+export CROSS_COMPILE="/media/KERNELdev/KERNEL_DEVELOPMENT/COMPILER_TOOLS/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
 
 # RegEx the KBUILD_COMPILER_STRING to keep things crisp and clear
-export KBUILD_COMPILER_STRING=$(/home/bharath/Downloads/dragontc-8.0-dragontc/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
+export KBUILD_COMPILER_STRING=$(/media/KERNELdev/KERNEL_DEVELOPMENT/COMPILER_TOOLS/dragontc-8.0-dragontc/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
 
 # Set User and Host
 export KBUILD_BUILD_USER="BHARATH"
-export KBUILD_BUILD_HOST="BIONIC-BEFUDDLE"
+export KBUILD_BUILD_HOST="DEMONIC-DARMSTADTIUM"
 
 # Branding DARKBERRY
 
@@ -74,14 +74,11 @@ echo "-----------------------------------------------"
 echo "  Initializing build to compile Ver: $ZIP_NAME "
 echo "-----------------------------------------------"
 
+make clean && make mrproper
+
 echo -e "***********************************************"
 echo     "         Creating Output Directory: out       "
 echo -e "***********************************************"
-
-
-#clean path
-
-make clean && make mrproper
 
 # Create Out
 mkdir -p out
@@ -100,14 +97,14 @@ echo -e "***********************************************"
 # make
 if [[ $compiler_build == "clang" ]]; then
   make -j$(nproc --all) O=out ARCH=arm64 \
-                              CC="/home/bharath/Downloads/dragontc-8.0-dragontc/bin/clang" \
-                              CROSS_COMPILE="/home/bharath/Downloads/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"\
+                              CC="/media/KERNELdev/KERNEL_DEVELOPMENT/COMPILER_TOOLS/dragontc-8.0-dragontc/bin/clang" \
+                              CROSS_COMPILE="/media/KERNELdev/KERNEL_DEVELOPMENT/COMPILER_TOOLS/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"\
                               CLANG_TRIPLE="aarch64-linux-gnu-"
 fi
 
 if [[ $compiler_build == "gcc" ]]; then
   make -j$(nproc --all) O=out ARCH=arm64 \
-                              CROSS_COMPILE="/home/bharath/Downloads/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
+                              CROSS_COMPILE="/media/KERNELdev/KERNEL_DEVELOPMENT/COMPILER_TOOLS/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
 fi
 
 # If the above was successful
